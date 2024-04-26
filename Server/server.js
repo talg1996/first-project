@@ -52,6 +52,31 @@ app.post("/login", async (req, res) => {
     res.status(500).send("Authentication failed");
   }
 });
+app.post("/register", async (req, res) => {
+  const { Email, Password } = req.body;
+
+  if (!Email || !Password) {
+    return res.status(400).send("Email and Password are required");
+  }
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO users (email, password) VALUES ($1, $2)",
+      [Email, Password]
+    );
+
+    console.log("User registered successfully:", Email);
+    res.status(201).send("User registered successfully");
+  } catch (error) {
+    if (error.code === "23505" && error.detail.includes("already exists")) {
+      // PostgreSQL error code '23505' represents a unique violation
+      return res.status(409).send("User already exists");
+    } else {
+      console.error("Error registering user:", error);
+      res.status(500).send("Register failed");
+    }
+  }
+});
 
 // Start the server
 app.listen(port, () => {
