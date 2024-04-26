@@ -31,7 +31,7 @@ app.get("/api", async (req, res) => {
 
 // POST endpoint for user login
 app.post("/login", async (req, res) => {
-  const { Email, Password } = req.body;
+  const { Email, Password } = req.body; //
 
   try {
     const result = await pool.query(
